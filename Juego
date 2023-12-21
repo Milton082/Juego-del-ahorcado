@@ -33,7 +33,7 @@ class Ahorcado {
     private int intentosRestantes;
     private final JuegoListener juegoListener;
 
-    private static final String[] palabras = {"PROGRAMACION", "JAVA", "AHORCADO", "OPENAI", "GPT"};
+    private static final String[] palabras = {"programacion","computacion","UPS","juego"};
 
     public Ahorcado(JuegoListener juegoListener) {
         this.palabraSecreta = seleccionarPalabraAleatoria();
