@@ -1,0 +1,95 @@
+import java.util.Scanner;
+
+interface JuegoListener {
+    void actualizarPalabra(String palabraActualizada);
+
+    void mostrarMensaje(String mensaje);
+
+    char solicitarLetra();
+}
+
+class ConsolaListener implements JuegoListener {
+    @Override
+    public void actualizarPalabra(String palabraActualizada) {
+        System.out.println("Palabra: " + palabraActualizada);
+    }
+
+    @Override
+    public void mostrarMensaje(String mensaje) {
+        System.out.println(mensaje);
+    }
+
+    @Override
+    public char solicitarLetra() {
+        System.out.print("Ingresa una letra: ");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.next().toUpperCase().charAt(0);
+    }
+}
+
+class Ahorcado {
+    private final String palabraSecreta;
+    private final char[] palabraDescubierta;
+    private int intentosRestantes;
+    private final JuegoListener juegoListener;
+
+    private static final String[] palabras = {"PROGRAMACION", "JAVA", "AHORCADO", "OPENAI", "GPT"};
+
+    public Ahorcado(JuegoListener juegoListener) {
+        this.palabraSecreta = seleccionarPalabraAleatoria();
+        this.palabraDescubierta = new char[palabraSecreta.length()];
+        this.intentosRestantes = 6;
+        this.juegoListener = juegoListener;
+
+        for (int i = 0; i < palabraDescubierta.length; i++) {
+            palabraDescubierta[i] = '_';
+        }
+    }
+
+    private String seleccionarPalabraAleatoria() {
+        int indice = (int) (Math.random() * palabras.length);
+        return palabras[indice];
+    }
+
+    public void jugar() {
+        while (intentosRestantes > 0 && !haGanado()) {
+            juegoListener.actualizarPalabra(String.valueOf(palabraDescubierta));
+            juegoListener.mostrarMensaje("Intentos restantes: " + intentosRestantes);
+            char letra = juegoListener.solicitarLetra();
+
+            if (!intentarAdivinar(letra)) {
+                intentosRestantes--;
+                juegoListener.mostrarMensaje("Letra incorrecta. Intenta de nuevo.");
+            }
+        }
+
+        if (haGanado()) {
+            juegoListener.mostrarMensaje("¡Felicidades! Has adivinado la palabra: " + palabraSecreta);
+        } else {
+            juegoListener.mostrarMensaje("Oh no, has agotado tus intentos. La palabra era: " + palabraSecreta);
+        }
+    }
+
+    private boolean intentarAdivinar(char letra) {
+        boolean acierto = false;
+        for (int i = 0; i < palabraSecreta.length(); i++) {
+            if (palabraSecreta.charAt(i) == letra) {
+                palabraDescubierta[i] = letra;
+                acierto = true;
+            }
+        }
+        return acierto;
+    }
+
+    private boolean haGanado() {
+        return String.valueOf(palabraDescubierta).equals(palabraSecreta);
+    }
+}
+
+public class JuegoAhorcado {
+    public static void main(String[] args) {
+        JuegoListener consolaListener = new ConsolaListener();
+        Ahorcado juego = new Ahorcado(consolaListener);
+        juego.jugar();
+    }
+}
